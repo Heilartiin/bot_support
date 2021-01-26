@@ -1,0 +1,40 @@
+package controllers
+
+import (
+	"github.com/Heilartin/bot_support/clients/discord"
+	"github.com/Heilartin/bot_support/clients/mrporter"
+	"github.com/Heilartin/bot_support/clients/proxies"
+	"github.com/Heilartin/bot_support/config"
+	"github.com/Heilartin/bot_support/logger"
+	"github.com/Heilartin/bot_support/storage"
+	"github.com/bwmarrin/discordgo"
+	"time"
+)
+
+
+type Controllers struct {
+	StartTime     time.Time
+	Logger        *logger.LocalLogger
+	Config        *config.Config
+	Repository    *storage.Storage
+	Session 	  *discordgo.Session
+	FileClient 	  *proxies.FClient
+	Dis 		  *discord.DiscordClient
+	MrPorter 	  *mrporter.MrpClient
+}
+
+func NewControllers(rep *storage.Storage, log *logger.LocalLogger,
+	cfg *config.Config, s *discordgo.Session) *Controllers {
+
+	a := &Controllers{
+		StartTime:     time.Now(),
+		Config:        cfg,
+		Logger:        log,
+		Repository:    rep,
+		Session: 	   s,
+		FileClient:    proxies.NewFileClient(log, rep),
+		MrPorter:  	   mrporter.NewMrpClient(log, cfg.MRPConfig, rep),
+		Dis:  		   discord.NewDiscordClient(log, cfg.DiscordConfig),
+	}
+	return a
+}

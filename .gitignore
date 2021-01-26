@@ -1,0 +1,11 @@
+/idea
+.idea
+.env
+/.idea
+/junk
+/cert
+*.crt
+*.csr
+*.key
+/vendor
+.gitconfig

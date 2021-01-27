@@ -1,10 +1,7 @@
 package api
 
 import (
-	"context"
-	"database/sql"
 	"github.com/bwmarrin/discordgo"
-	"github.com/pkg/errors"
 	"strings"
 )
 
@@ -27,33 +24,19 @@ func (api *API) MessageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		return
 	}
 
-	if command[0] == "auth" {
-		err := api.Controllers.CreateUser(m)
-		if err != nil {
-			return
-		}
-		return
-	}
-
-	user, err := api.Repository.DB.GetUserByMemberID(m.Author.ID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			api.BadAction("Sorry, we could not authenticate you. Try again", m)
-			return
-		}
-		api.Logger.Error(errors.WithStack(err))
-		return
-	}
-
-	ctx := context.WithValue(context.Background(), "userData", user)
-
 	switch command[0] {
-	case "atc":
-		api.Controllers.GetAtc(ctx, m)
+	case "help":
+		api.Controllers.Help(m)
 	case "atw":
-		api.Controllers.GetAtw(ctx, m)
+		api.Controllers.GetAtw(m)
 	case "qt":
+		api.Controllers.GetQTSToPrivateChannel(m)
+	case "qt-channel":
 		api.Controllers.GetQTs(m)
+	case "vd-balance":
+		api.Controllers.VDSinGetBalance(m)
+	case "vd-servers":
+		api.Controllers.VDSinGetAllServers(m)
 		default:
 			return
 		}

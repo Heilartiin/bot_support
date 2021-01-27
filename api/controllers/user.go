@@ -1,72 +1,42 @@
 package controllers
 
 import (
-	"context"
-	"github.com/Heilartin/bot_support/models"
+	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/pkg/errors"
-	"strings"
 	"time"
 )
 
-
-func (c *Controllers) CreateUser(m *discordgo.MessageCreate) error  {
-	info := strings.Split(m.Content, " ")
-	if len(info) < 3 {
-		c.Logger.Error(errors.WithStack(errors.New("Missing parameter")))
-		c.BadAction("Missing parameter", m)
-		return errors.New("Missing parameter")
-	}
+func (c *Controllers) Help(m *discordgo.MessageCreate)  {
 	channelPrivate, err := c.Session.UserChannelCreate(m.Author.ID)
 	if err != nil {
-		c.BadAction(err.Error(), m)
-		return err
+		c.Logger.Error(errors.WithStack(err))
+		return
 	}
-	wishlist := info[1]
-	token := info[2]
-	u := models.User{
-		MemberID: m.Author.ID,
-		Token: token,
-		WishList: wishlist,
-		PrivateChannel: channelPrivate.ID,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		DeletedAt: time.Time{},
+	commands := discordgo.MessageEmbedField{
+		Name: "Commands",
+		Value: fmt.Sprintf(
+			"!help - help\n" +
+				"!qt <pid> - отправить quick tasks",
+			),
+		Inline: true,
 	}
-	userID, err := c.Repository.DB.CreateUser(u)
+	user := discordgo.MessageEmbedField{
+		Name: "User",
+		Value: fmt.Sprintf("%s#%s (<@%s>)", m.Author.Username, m.Author.Discriminator, m.Author.ID),
+		Inline: false,
+	}
+	e := discordgo.MessageEmbed{
+		Title: "Help list",
+		Fields: []*discordgo.MessageEmbedField{&commands, &user},
+		Footer: &discordgo.MessageEmbedFooter{
+			Text: fmt.Sprintf("Manager | %v", time.Now().Format("Mon Jan _2 15:04:05 2006")),
+			IconURL: c.Config.Discord.FooterIcon,
+		},
+	}
+	_, err = c.Session.ChannelMessageSendEmbed(channelPrivate.ID, &e)
 	if err != nil {
 		c.Logger.Error(errors.WithStack(err))
-		return  errors.WithStack(err)
+		return
 	}
-	u.ID = userID
-	e := c.CreateUserEmbed("Information", &u)
-	_, err = c.Session.ChannelMessageSendEmbed(u.PrivateChannel, e)
-	if err != nil {
-		c.Logger.Error(errors.WithStack(err))
-		return errors.WithStack(err)
-	}
-	return nil
-}
-
-func (c *Controllers) GetUser(ctx context.Context, m *discordgo.MessageCreate) error  {
-	userInfo, err := c.UserFromContext(ctx)
-	if err != nil {
-		c.Logger.Error(errors.WithStack(err))
-		return errors.WithStack(err)
-	}
-	e := c.CreateUserEmbed("Information", userInfo)
-	_, err = c.Session.ChannelMessageSendEmbed(userInfo.PrivateChannel, e)
-	if err != nil {
-		c.Logger.Error(errors.WithStack(err))
-		return errors.WithStack(err)
-	}
-	return nil
-}
-
-func (c *Controllers) UserFromContext(ctx context.Context) (*models.User, error) {
-	user, ok := ctx.Value("userData").(models.User)
-	if !ok {
-		return nil, errors.WithStack(errors.New("No user data"))
-	}
-	return &user, nil
 }

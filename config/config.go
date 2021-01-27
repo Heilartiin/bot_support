@@ -14,6 +14,7 @@ type Config struct {
 	DBHost          string
 	DBPort          string
 	ProductionStart string
+	VDSin			*VDSin
 	Discord			*Discord
 	MRPConfig		*MrpPorter
 	DiscordConfig   *DiscordConfig
@@ -42,6 +43,10 @@ type DiscordConfig struct {
 	UserName    string
 	QTUrl		string
 	Avatar 		string
+}
+
+type VDSin struct {
+	ApiUrl	string
 }
 
 func NewConfig() *Config {
@@ -78,6 +83,7 @@ func NewConfig() *Config {
 			QTUrl:      os.Getenv("QT_API_URL"),
 			Avatar:     os.Getenv("DISCORD_AVATAR"),
 		},
+		VDSin: &VDSin{ApiUrl: os.Getenv("VDSIN_API_URL")},
 	}
 	return &cfg
 }

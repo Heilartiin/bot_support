@@ -18,13 +18,10 @@ func (db *DB) GetProductByTaskID(pid, storeID string) (*models.Product, error)  
 			product.price "product.price",
 			product.symbol "product.symbol",
 			product.stock_level "product.stock_level",
-			product.created_at "product.created_at",
-			product.updated_at "product.updated_at",
-			product.deleted_at "product.deleted_at",
 		
 			COALESCE(json_agg(DISTINCT sizes.*), '[]')::json "sizes"
-		FROM bot_support.mrp_products AS product
-				 left JOIN bot_support.mrp_sizes as sizes ON
+		FROM mrp_products AS product
+				 left JOIN mrp_sizes as sizes ON
 			( product.task_id = sizes.task_id)
 		
 		WHERE product.pid = $1 AND product.store_id = $2 GROUP BY "product.id";`

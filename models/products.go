@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"time"
 )
 
 type Product struct {
@@ -19,9 +18,9 @@ type Product struct {
 	StockLevel 	int 		`json:"stock_level" db:"stock_level"`
 	Sizes 		[]*Size 	`json:"sizes"`
 	Message 	string		`json:"message"`
-	CreatedAt 	time.Time 	`json:"created_at" db:"created_at"`
-	UpdatedAt 	time.Time 	`json:"updated_at" db:"updated_at"`
-	DeletedAt 	time.Time 	`json:"deleted_at" db:"deleted_at"`
+	//CreatedAt 	time.Time 	`json:"created_at" db:"created_at"`
+	//UpdatedAt 	time.Time 	`json:"updated_at" db:"updated_at"`
+	//DeletedAt 	time.Time 	`json:"deleted_at" db:"deleted_at"`
 }
 
 type Size struct {
@@ -41,9 +40,9 @@ type Size struct {
 	SizeChart		string		`json:"size_chart"`
 	StockLevel		int			`json:"stock_level" db:"stock_level"`
 	PartNumber		string  	`json:"part_number" db:"part_number"`
-	CreatedAt 		time.Time 	`json:"created_at" db:"created_at"`
-	UpdatedAt 		time.Time 	`json:"updated_at" db:"updated_at"`
-	DeletedAt 		time.Time 	`json:"deleted_at" db:"deleted_at"`
+	//CreatedAt 		time.Time 	`json:"created_at" db:"created_at"`
+	//UpdatedAt 		time.Time 	`json:"updated_at" db:"updated_at"`
+	//DeletedAt 		time.Time 	`json:"deleted_at" db:"deleted_at"`
 }
 
 

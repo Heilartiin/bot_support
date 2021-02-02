@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	_cloud "github.com/Heilartin/bot_support/clients/1cloud"
 	"github.com/Heilartin/bot_support/clients/discord"
 	"github.com/Heilartin/bot_support/clients/mrporter"
 	"github.com/Heilartin/bot_support/clients/proxies"
@@ -23,6 +24,7 @@ type Controllers struct {
 	Dis 		  *discord.DiscordClient
 	MrPorter 	  *mrporter.MrpClient
 	VDSin 		  *vdsin.VDSinClient
+	OneCloud 	  *_cloud.OneCClient
 }
 
 func NewControllers(rep *storage.Storage, log *logger.LocalLogger,
@@ -38,6 +40,7 @@ func NewControllers(rep *storage.Storage, log *logger.LocalLogger,
 		FileClient:    proxies.NewFileClient(log, rep),
 		MrPorter:  	   mrporter.NewMrpClient(log, cfg.MRPConfig, rep),
 		Dis:  		   discord.NewDiscordClient(log, cfg.DiscordConfig),
+		OneCloud:      _cloud.NewOneCClient(log, cfg.OneCloud),
 	}
 	return a
 }

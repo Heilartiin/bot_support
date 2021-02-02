@@ -1,4 +1,4 @@
-package vdsin
+package _cloud
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func (v *VDSinClient) doReq(method, apiToken, path string, body []byte) (*http.Response, error)  {
+func (v *OneCClient) doReq(method, apiToken, path string, body []byte) (*http.Response, error)  {
 	url := fmt.Sprintf("%s/%s", v.cfg.ApiUrl, path)
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(body))
 	if err != nil {
@@ -19,7 +19,7 @@ func (v *VDSinClient) doReq(method, apiToken, path string, body []byte) (*http.R
 	}
 
 	req.Header.Add("Content-Type", "application/json'")
-	req.Header.Add("Authorization", apiToken)
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", apiToken))
 
 	resp, err := v.c.Do(req)
 	if err != nil {
@@ -29,8 +29,9 @@ func (v *VDSinClient) doReq(method, apiToken, path string, body []byte) (*http.R
 	return resp, nil
 }
 
-func (v *VDSinClient) GetBalance(apiToken string) (*Balance, error)  {
-	path := "v1/account.balance"
+
+func (v *OneCClient) GetBalance(apiToken string) (*Balance, error)  {
+	path := "account"
 	resp, err := v.doReq("GET", apiToken, path, nil)
 	if err != nil {
 		v.log.Error(errors.WithStack(err))
@@ -54,8 +55,8 @@ func (v *VDSinClient) GetBalance(apiToken string) (*Balance, error)  {
 	return balance, nil
 }
 
-func (v *VDSinClient) GetAllServers(apiToken string) (*ServerResponse, error)  {
-	path := "v1/server"
+func (v *OneCClient) GetAllServers(apiToken string) ([]*Server, error)  {
+	path := "Server"
 	resp, err := v.doReq("GET", apiToken, path, nil)
 	if err != nil {
 		v.log.Error(errors.WithStack(err))
@@ -70,7 +71,7 @@ func (v *VDSinClient) GetAllServers(apiToken string) (*ServerResponse, error)  {
 		v.log.Error(errors.WithStack(err))
 		return nil, err
 	}
-	var servers *ServerResponse
+	var servers []*Server
 	err = json.Unmarshal(br, &servers)
 	if err != nil {
 		v.log.Error(errors.WithStack(err))
@@ -80,52 +81,22 @@ func (v *VDSinClient) GetAllServers(apiToken string) (*ServerResponse, error)  {
 }
 
 
-func (v *VDSinClient) GetServerByID(apiToken string, serverID int) (*ServerCredential, error)  {
-	path := fmt.Sprintf("v1/server.vnc/%d", serverID)
-	resp, err := v.doReq("GET", apiToken, path, nil)
-	if err != nil {
-		v.log.Error(errors.WithStack(err))
-		return nil, err
-	}
-	if resp.StatusCode != 200 {
-		v.log.Error(errors.WithStack(errors.New(resp.Status)))
-		return nil, errors.New(resp.Status)
-	}
-	br, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		v.log.Error(errors.WithStack(err))
-		return nil, err
-	}
-	var serv *ServerCredential
-	err = json.Unmarshal(br, &serv)
-	if err != nil {
-		v.log.Error(errors.WithStack(err))
-		return nil, err
-	}
-	return serv, nil
-}
-
-func (v *VDSinClient) GetAllCredential(apiToken string) ([]*models.Server, error) {
+func (v *OneCClient) GetAllCredential(apiToken string) ([]*models.Server, error) {
 	resp, err := v.GetAllServers(apiToken)
 	if err != nil {
 		v.log.Error(errors.WithStack(err))
 		return nil, err
 	}
-	if len(resp.Data) == 0 {
+	if len(resp) == 0 {
 		v.log.Error(errors.WithStack(errors.New("Servers is empty")))
 		return nil, errors.New("Servers is empty")
 	}
 	var servers []*models.Server
-	for index, s := range resp.Data {
-		creds, err := v.GetServerByID(apiToken, s.ID)
-		if err != nil {
-			v.log.Error(errors.WithStack(err))
-			return nil, err
-		}
+	for index, s := range resp {
 		serv :=  models.Server{
-			Name:     			fmt.Sprintf("A-%d", index + 1),
-			Host:     			s.IP.IP,
-			CredentialPassword: creds.Data.Password,
+			Name:     			fmt.Sprintf("1C A-%d", index + 1),
+			Host:     			s.IP,
+			CredentialPassword: s.AdminPassword,
 			CredentialUserName: "",
 			SubMode:            "",
 			ConnectionType:     "Microsoft RDP",

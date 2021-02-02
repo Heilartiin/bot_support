@@ -15,6 +15,7 @@ type Config struct {
 	DBPort          string
 	ProductionStart string
 	VDSin			*VDSin
+	OneCloud		*OneCloud
 	Discord			*Discord
 	MRPConfig		*MrpPorter
 	DiscordConfig   *DiscordConfig
@@ -47,6 +48,10 @@ type DiscordConfig struct {
 
 type VDSin struct {
 	ApiUrl	string
+}
+
+type OneCloud struct {
+	ApiUrl 	string
 }
 
 func NewConfig() *Config {
@@ -84,6 +89,7 @@ func NewConfig() *Config {
 			Avatar:     os.Getenv("DISCORD_AVATAR"),
 		},
 		VDSin: &VDSin{ApiUrl: os.Getenv("VDSIN_API_URL")},
+		OneCloud: &OneCloud{ApiUrl: os.Getenv("ONE_CLOUD_API_URL")},
 	}
 	return &cfg
 }

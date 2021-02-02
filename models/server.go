@@ -1,6 +1,6 @@
 package models
 
-type VDSinServer struct {
+type Server struct {
 	ConnectionType     string `csv:"ConnectionType" json:"connection_type"`
 	Name               string `csv:"Name" json:"name"`
 	Host               string `csv:"Host" json:"host"`

@@ -37,6 +37,8 @@ func (api *API) MessageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		api.Controllers.VDSinGetBalance(m)
 	case "vd-servers":
 		api.Controllers.VDSinGetAllServers(m)
+	case "vd-delete":
+		api.Controllers.VDSinDeleteAllServers(m)
 	case "1c-balance":
 		api.Controllers.OneCloudGetBalance(m)
 	case "1c-servers":

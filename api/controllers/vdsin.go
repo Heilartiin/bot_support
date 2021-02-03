@@ -87,3 +87,23 @@ func (c *Controllers) VDSinGetAllServers(m *discordgo.MessageCreate)  {
 	}
 }
 
+
+func (c *Controllers) VDSinDeleteAllServers(m *discordgo.MessageCreate)  {
+	info := strings.Split(m.Content, " ")
+	if len(info) < 2 {
+		c.Logger.Error(errors.WithStack(errors.New("Missing parameter")))
+		c.BadAction("Missing parameter", m)
+		return
+	}
+	apiToken := info[1]
+	err := c.VDSin.DeleteAllServers(apiToken)
+	if err != nil {
+		c.Logger.Error(errors.WithStack(err))
+		c.BadAction(err.Error(), m)
+		return
+	}
+	c.SuccessAction("All server of VDSin deleted.", m)
+	return
+}
+
+

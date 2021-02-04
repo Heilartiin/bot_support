@@ -1,0 +1,1 @@
+{"file":"/Users/heilartin/go/src/github.com/Heilartin/bot_support/api/controllers/proxy-market.go","function":"ProxyMarketGetProxiesCSV","level":"error","line":"22","msg":"parsing time \"\"2021-02-27 21:00:00\"\" as \"\"2006-01-02T15:04:05Z07:00\"\": cannot parse \" 21:00:00\"\" as \"T\"","time":"2021-02-04T21:37:51+03:00"}

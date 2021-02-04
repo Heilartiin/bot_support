@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
-	"github.com/gocarina/gocsv"
+
+  	"github.com/gocarina/gocsv"
 	"github.com/pkg/errors"
 	"strings"
 	"time"

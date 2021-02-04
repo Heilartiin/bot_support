@@ -43,6 +43,10 @@ func (api *API) MessageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		api.Controllers.OneCloudGetBalance(m)
 	case "1c-servers":
 		api.Controllers.OneCloudGetAllServers(m)
+	case "pm-proxies":
+		api.Controllers.GetProxyMarketProxiesJSONFile(m)
+	case "pm-proxies-string":
+		api.Controllers.GetProxyMarketStringJSONFile(m)
 		default:
 			return
 		}

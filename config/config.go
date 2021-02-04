@@ -14,6 +14,7 @@ type Config struct {
 	DBHost          string
 	DBPort          string
 	ProductionStart string
+	ProxyMarket 	*ProxyMarket
 	VDSin			*VDSin
 	OneCloud		*OneCloud
 	Discord			*Discord
@@ -34,6 +35,10 @@ type Discord struct {
 type MrpPorter struct {
 	ApiUrl 		string
 	ClientID 	string
+}
+
+type ProxyMarket struct {
+	ApiKey string
 }
 
 type DiscordConfig struct {
@@ -90,6 +95,7 @@ func NewConfig() *Config {
 		},
 		VDSin: &VDSin{ApiUrl: os.Getenv("VDSIN_API_URL")},
 		OneCloud: &OneCloud{ApiUrl: os.Getenv("ONE_CLOUD_API_URL")},
+		ProxyMarket: &ProxyMarket{ApiKey: os.Getenv("PROXY_MARKET_API_KEY")},
 	}
 	return &cfg
 }

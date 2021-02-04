@@ -9,6 +9,7 @@ import (
 	"github.com/Heilartin/bot_support/config"
 	"github.com/Heilartin/bot_support/logger"
 	"github.com/Heilartin/bot_support/storage"
+	proxy_market "github.com/Heilartin/proxy-market"
 	"github.com/bwmarrin/discordgo"
 	"time"
 )
@@ -25,6 +26,7 @@ type Controllers struct {
 	MrPorter 	  *mrporter.MrpClient
 	VDSin 		  *vdsin.VDSinClient
 	OneCloud 	  *_cloud.OneCClient
+	ProxiesMarket *proxy_market.ProxyMarketClient
 }
 
 func NewControllers(rep *storage.Storage, log *logger.LocalLogger,
@@ -41,6 +43,7 @@ func NewControllers(rep *storage.Storage, log *logger.LocalLogger,
 		MrPorter:  	   mrporter.NewMrpClient(log, cfg.MRPConfig, rep),
 		Dis:  		   discord.NewDiscordClient(log, cfg.DiscordConfig),
 		OneCloud:      _cloud.NewOneCClient(log, cfg.OneCloud),
+		ProxiesMarket: proxy_market.NewProxyMarketClient(cfg.ProxyMarket.ApiKey),
 	}
 	return a
 }

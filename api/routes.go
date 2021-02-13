@@ -49,6 +49,10 @@ func (api *API) MessageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		api.Controllers.GetProxyMarketProxiesJSONFile(m)
 	case "pm-proxies-string":
 		api.Controllers.GetProxyMarketStringJSONFile(m)
+	case "nike-storage":
+		api.Controllers.StorageNikeEntries(m)
+	case "nike-tops":
+		api.Controllers.GetEntriesByTOP(m)
 		default:
 			return
 		}

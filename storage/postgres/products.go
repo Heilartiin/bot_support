@@ -50,3 +50,14 @@ func (db *DB) processRawProduct(p models.RawProduct) (*models.Product, error) {
 	p.Product.Sizes = sizes
 	return p.Product, nil
 }
+
+func (db *DB) GetPidByBrandName(name string) ([]string, error)  {
+	var res []string
+	query := `SELECT DISTINCT variant_part_number FROM mrp_scraper WHERE designer_name=$1;`
+	err := db.DB.Select(&res, query, name)
+	if err != nil {
+		db.Logger.Error(err)
+		return nil, err
+	}
+	return res, nil
+}

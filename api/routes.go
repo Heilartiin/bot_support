@@ -29,6 +29,8 @@ func (api *API) MessageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		api.Controllers.Help(m)
 	case "atw":
 		api.Controllers.GetAtw(m)
+	case "mrp":
+		api.Controllers.GetImages(m)
 	case "qt":
 		api.Controllers.GetQTSToPrivateChannel(m)
 	case "qt-channel":

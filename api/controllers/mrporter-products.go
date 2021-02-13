@@ -60,12 +60,7 @@ func (c *Controllers) GetQTSToPrivateChannel(m *discordgo.MessageCreate) {
 		}
 		embedProduct := c.CreateProductEmbed(resp)
 
-		channelPrivate, err := c.Session.UserChannelCreate(m.Author.ID)
-		if err != nil {
-			c.Logger.Error(errors.WithStack(err))
-			return
-		}
-		_, err = c.Session.ChannelMessageSendEmbed(channelPrivate.ID, embedProduct)
+		_, err = c.Session.ChannelMessageSendEmbed(m.ChannelID, embedProduct)
 		if err != nil {
 			c.Logger.Error(errors.WithStack(err))
 			return
@@ -175,4 +170,37 @@ func (c *Controllers) CreateProductEmbed(p *models.Product) *discordgo.MessageEm
 		},
 	}
 	return &e
+}
+
+
+func (c *Controllers) GetImages(m *discordgo.MessageCreate) {
+	info := strings.Split(m.Content, " ")
+	if len(info) < 2 {
+		c.Logger.Error(errors.WithStack(errors.New("Missing parameter")))
+		c.BadAction("Missing parameter", m)
+		return
+	}
+	brand := info[1]
+	pids, err := c.Repository.DB.GetPidByBrandName(brand)
+	if err != nil {
+		c.Logger.Error(errors.WithStack(err))
+		c.BadAction(err.Error(), m)
+		return
+	}
+	for _, v := range pids {
+		emb := discordgo.MessageEmbed{
+			Title:       v,
+			Image:       &discordgo.MessageEmbedImage{
+				URL:      fmt.Sprintf(fmt.Sprintf("https://imageresize.24i.com/?w=300&url=cache.mrporter.com/variants/images/%s/fr/w300.jpg", v)),
+			},
+		}
+		_, err := c.Session.ChannelMessageSendEmbed(m.ChannelID, &emb)
+		if err != nil {
+			c.Logger.Error(err)
+			c.BadAction(err.Error(), m)
+			return
+		}
+		time.Sleep(3 * time.Second)
+	}
+	return
 }

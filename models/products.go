@@ -14,6 +14,7 @@ type Product struct {
 	Name 		string 		`json:"name" db:"name"`
 	Image 		string 		`json:"image" db:"image"`
 	Price 		int			`json:"price" db:"price"`
+	Task 	    *Task		`json:"task"`
 	Symbol 		string		`json:"symbol" db:"symbol"`
 	StockLevel 	int 		`json:"stock_level" db:"stock_level"`
 	Sizes 		[]*Size 	`json:"sizes"`

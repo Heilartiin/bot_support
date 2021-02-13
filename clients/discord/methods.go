@@ -62,6 +62,36 @@ func (d *DiscordClient) SendBotInfoNotification(p *models.Product) error {
 
 
 func (d *DiscordClient) CreateBotEmbed(p *models.Product) *discordgo.MessageEmbed  {
+	pathUrl := ""
+	region := ""
+	if p.StoreID == "mrp_US"  {
+		region = "US"
+		pathUrl = "en-us"
+	}
+	if p.StoreID == "mrp_RU" {
+		region = "RU"
+		pathUrl = "en-ru"
+	}
+	if p.StoreID == "mrp_GB" {
+		region = "GB"
+		pathUrl = "en-gb"
+	}
+
+	taskID := discordgo.MessageEmbedField{
+		Name:   "Task ID",
+		Value: 	fmt.Sprintf("%d", p.Task.ID),
+		Inline:  true,
+	}
+	accessLink := discordgo.MessageEmbedField{
+		Name: 	 "Access",
+		Value:	 fmt.Sprintf("[Click](https://www.mrporter.com/%s/wishlist/%s/%s)", pathUrl, p.WishListID, p.AccessKey),
+		Inline:  true,
+	}
+	delay := discordgo.MessageEmbedField{
+		Name:    "Delay",
+		Value: 	 fmt.Sprintf("%d", p.Task.TimeSleep),
+		Inline:  true,
+	}
 
 	itemCode := discordgo.MessageEmbedField{
 		Name:   "Item Code",
@@ -78,7 +108,7 @@ func (d *DiscordClient) CreateBotEmbed(p *models.Product) *discordgo.MessageEmbe
 		Value: fmt.Sprintf("%d %s", p.Price / 100, p.Symbol),
 		Inline: true,
 	}
-	fields := []*discordgo.MessageEmbedField{&itemCode, &storeID, &price}
+	fields := []*discordgo.MessageEmbedField{&taskID, &accessLink, &delay, &itemCode, &storeID, &price}
 
 	var links 	[]string
 	var quicks 	[]string
@@ -131,21 +161,6 @@ func (d *DiscordClient) CreateBotEmbed(p *models.Product) *discordgo.MessageEmbe
 		}
 		fields = append(fields, &newSizesField, &newSkusField, &newQuickField)
 	}
-	pathUrl := ""
-	region := ""
-	if p.StoreID == "mrp_US"  {
-		region = "US"
-		pathUrl = "en-us"
-	}
-	if p.StoreID == "mrp_RU" {
-		region = "RU"
-		pathUrl = "en-ru"
-	}
-	if p.StoreID == "mrp_GB" {
-		region = "GB"
-		pathUrl = "en-gb"
-	}
-
 	color, _ := strconv.Atoi(d.cfg.Color)
 	e := discordgo.MessageEmbed{
 		Title: fmt.Sprintf("[%s] %s", region, p.Name),

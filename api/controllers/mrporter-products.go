@@ -28,10 +28,18 @@ func (c *Controllers) GetQTs(m *discordgo.MessageCreate) {
 			c.BadAction("Bad request", m)
 			return
 		}
-		err = c.Dis.SendBotInfoNotification(resp)
+		task, err := c.Repository.DB.GetTaskByID(resp.TaskID)
 		if err != nil {
 			c.Logger.Error(errors.WithStack(err))
 			c.BadAction("Bad request", m)
+			return
+		}
+		resp.Task = task
+
+		embedProduct := c.CreateProductEmbed(resp)
+		_, err = c.Session.ChannelMessageSendEmbed(m.ChannelID, embedProduct)
+		if err != nil {
+			c.Logger.Error(errors.WithStack(err))
 			return
 		}
 	}
@@ -58,9 +66,21 @@ func (c *Controllers) GetQTSToPrivateChannel(m *discordgo.MessageCreate) {
 			c.BadAction("Bad request", m)
 			return
 		}
+		task, err := c.Repository.DB.GetTaskByID(resp.TaskID)
+		if err != nil {
+			c.Logger.Error(errors.WithStack(err))
+			c.BadAction("Bad request", m)
+			return
+		}
+		resp.Task = task
 		embedProduct := c.CreateProductEmbed(resp)
 
-		_, err = c.Session.ChannelMessageSendEmbed(m.ChannelID, embedProduct)
+		privateChannel, err := c.Session.UserChannelCreate(m.Author.ID)
+		if err != nil {
+			c.Logger.Error(errors.WithStack(err))
+			return
+		}
+		_, err = c.Session.ChannelMessageSendEmbed(privateChannel.ID, embedProduct)
 		if err != nil {
 			c.Logger.Error(errors.WithStack(err))
 			return
@@ -71,6 +91,36 @@ func (c *Controllers) GetQTSToPrivateChannel(m *discordgo.MessageCreate) {
 
 
 func (c *Controllers) CreateProductEmbed(p *models.Product) *discordgo.MessageEmbed  {
+	pathUrl := ""
+	region := ""
+	if p.StoreID == "mrp_US"  {
+		region = "US"
+		pathUrl = "en-us"
+	}
+	if p.StoreID == "mrp_RU" {
+		region = "RU"
+		pathUrl = "en-ru"
+	}
+	if p.StoreID == "mrp_GB" {
+		region = "GB"
+		pathUrl = "en-gb"
+	}
+
+	taskID := discordgo.MessageEmbedField{
+		Name:   "Task ID",
+		Value: 	fmt.Sprintf("%d", p.Task.ID),
+		Inline:  true,
+	}
+	accessLink := discordgo.MessageEmbedField{
+		Name: 	 "Access",
+		Value:	 fmt.Sprintf("[Click](https://www.mrporter.com/%s/wishlist/%s/%s)", pathUrl, p.WishListID, p.AccessKey),
+		Inline:  true,
+	}
+	delay := discordgo.MessageEmbedField{
+		Name:    "Delay",
+		Value: 	 fmt.Sprintf("%d", p.Task.TimeSleep),
+		Inline:  true,
+	}
 
 	itemCode := discordgo.MessageEmbedField{
 		Name:   "Item Code",
@@ -87,7 +137,8 @@ func (c *Controllers) CreateProductEmbed(p *models.Product) *discordgo.MessageEm
 		Value: fmt.Sprintf("%d %s", p.Price / 100, p.Symbol),
 		Inline: true,
 	}
-	fields := []*discordgo.MessageEmbedField{&itemCode, &storeID, &price}
+	fields := []*discordgo.MessageEmbedField{&taskID, &accessLink, &delay, &itemCode, &storeID, &price}
+
 
 	var links 	[]string
 	var quicks 	[]string
@@ -139,20 +190,6 @@ func (c *Controllers) CreateProductEmbed(p *models.Product) *discordgo.MessageEm
 			Inline: true,
 		}
 		fields = append(fields, &newSizesField, &newSkusField, &newQuickField)
-	}
-	pathUrl := ""
-	region := ""
-	if p.StoreID == "mrp_US"  {
-		region = "US"
-		pathUrl = "en-us"
-	}
-	if p.StoreID == "mrp_RU" {
-		region = "RU"
-		pathUrl = "en-ru"
-	}
-	if p.StoreID == "mrp_GB" {
-		region = "GB"
-		pathUrl = "en-gb"
 	}
 
 	color, _ := strconv.Atoi(c.Config.DiscordConfig.Color)

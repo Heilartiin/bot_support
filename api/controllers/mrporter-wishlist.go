@@ -34,6 +34,7 @@ type ItemATW struct {
 }
 
 type PartNumber struct {
+	SizeName   string `json:"sizeName"`
 	PartNumber string `json:"partNumber"`
 }
 
@@ -50,7 +51,8 @@ func (c *Controllers) GetAtw(m *discordgo.MessageCreate) {
 	for _, storeID := range models.Stores {
 		resp, err := c.MrPorter.GetProductInfo(storeID, pid)
 		if err != nil {
-			c.Logger.Error(errors.WithStack(err))
+			c.Logger.Error(err)
+			c.BadAction(err.Error(), m)
 			continue
 		}
 		product = resp
@@ -58,13 +60,72 @@ func (c *Controllers) GetAtw(m *discordgo.MessageCreate) {
 	}
 	privateChannel, err := c.Session.UserChannelCreate(m.Author.ID)
 	if err != nil {
-		c.Logger.Error(errors.WithStack(err))
+		c.Logger.Error(err)
+		c.BadAction(err.Error(), m)
 		return
 	}
 	resp, err := c.CreateATWBody(product)
 	_, err = c.Session.ChannelFileSend(privateChannel.ID, fmt.Sprintf("atw.json"), resp)
 	if err != nil {
+		c.Logger.Error(err)
+		c.BadAction(err.Error(), m)
+		return
+	}
+}
+
+func (c *Controllers) GetATWFromScraper(m *discordgo.MessageCreate)  {
+	info := strings.Split(m.Content, " ")
+	if len(info) < 1 {
+		c.Logger.Error(errors.WithStack(errors.New("Missing parameter")))
+		c.BadAction("Missing parameter", m)
+		return
+	}
+	pid := info[1]
+	products, err := c.Repository.DB.GetScrapersProductByPid(pid)
+	if err != nil {
+		c.Logger.Error(err)
+		c.BadAction(err.Error(), m)
+		return
+	}
+	privateChannel, err := c.Session.UserChannelCreate(m.Author.ID)
+	if err != nil {
+		c.Logger.Error(err)
+		c.BadAction(err.Error(), m)
+		return
+	}
+
+	var partNumbers []*PartNumber
+	for _, v := range products {
+		partNumbers = append(partNumbers,
+			&PartNumber{
+			PartNumber: v.PartNumber,
+			SizeName:   v.Size},
+			)
+	}
+	resp := ItemATW{Item: partNumbers}
+	br, err := json.Marshal(resp)
+	if err != nil {
+		c.Logger.Error(err)
+		c.BadAction(err.Error(), m)
+		return
+	}
+	var prettyJSON bytes.Buffer
+	err = json.Indent(&prettyJSON, br,"", "\t")
+	if err != nil {
+		c.Logger.Error(err)
+		c.BadAction(err.Error(), m)
+		return
+	}
+	_, err = c.Session.ChannelFileSend(privateChannel.ID, fmt.Sprintf("%s_atw.json", pid), &prettyJSON)
+	if err != nil {
 		c.Logger.Error(errors.WithStack(err))
 		return
 	}
 }
+
+//var ValidSizes = []string{
+//	"4", "4.5", "5", "6", "6.5",
+//	"7", "7.5", "8", "8.5", "9",
+//	"9.5", "10", "10.5", "11",
+//	"11.5", "12", "12.5", "13",
+//}

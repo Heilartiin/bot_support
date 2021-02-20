@@ -31,6 +31,8 @@ func (api *API) MessageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		api.Controllers.GetAtw(m)
 	case "mrp":
 		api.Controllers.GetImages(m)
+	case "atw-scraper":
+		api.Controllers.GetATWFromScraper(m)
 	case "qt":
 		api.Controllers.GetQTSToPrivateChannel(m)
 	case "qt-channel":

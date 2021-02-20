@@ -62,6 +62,3 @@ func (db *DB) GetPidByBrandName(name string) ([]string, error)  {
 	return res, nil
 }
 
-func (db *DB)  {
-
-}

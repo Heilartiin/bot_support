@@ -55,6 +55,12 @@ func (api *API) MessageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		api.Controllers.StorageNikeEntries(m)
 	case "nike-tops":
 		api.Controllers.GetEntriesByTOP(m)
+	case "nike-storage-accounts":
+		api.Controllers.StorageNikeAccounts(m)
+	case "nike-accs":
+		api.Controllers.GetNikeAccounts(m)
+	case "nike-bots":
+		api.Controllers.GetTasksByAccounts(m)
 		default:
 			return
 		}

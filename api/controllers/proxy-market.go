@@ -60,6 +60,9 @@ func (c *Controllers) GetProxyMarketStringJSONFile(m *discordgo.MessageCreate)  
 	}
 	var prxs []string
 	for _, v := range file.List.Data {
+		if v.ExpiredAt.Time.Before(time.Now()) {
+			continue
+		}
 		prxs = append(prxs, fmt.Sprintf("%s:%d:%s:%s",
 			v.IP, v.HTTPPort, v.Login, v.Password))
 	}

@@ -3,6 +3,7 @@ package controllers
 import (
 	_cloud "github.com/Heilartin/bot_support/clients/1cloud"
 	"github.com/Heilartin/bot_support/clients/discord"
+	gsp "github.com/Heilartin/bot_support/clients/gs-nike-products"
 	"github.com/Heilartin/bot_support/clients/mrporter"
 	"github.com/Heilartin/bot_support/clients/proxies"
 	"github.com/Heilartin/bot_support/clients/vdsin"
@@ -26,6 +27,7 @@ type Controllers struct {
 	MrPorter 	  *mrporter.MrpClient
 	VDSin 		  *vdsin.VDSinClient
 	OneCloud 	  *_cloud.OneCClient
+	GsProductNike *gsp.Client
 	ProxiesMarket *proxy_market.ProxyMarketClient
 }
 

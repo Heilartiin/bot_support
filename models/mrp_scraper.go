@@ -23,6 +23,7 @@ type ScraperProduct struct {
 	PartNumber 			string	`json:"part_number" db:"part_number"`
 	Size 				string	`json:"size" db:"size"`
 	ImageUrl 			string	`json:"image_url" db:"image_url"`
+	InMonitor 			bool	`json:"in_monitor" db:"in_monitor"`
 	CreatedAt 			time.Time 	`json:"created_at" db:"created_at"`
 	UpdatedAt 			time.Time 	`json:"updated_at" db:"updated_at"`
 	DeletedAt 			time.Time 	`json:"deleted_at" db:"deleted_at"`

@@ -73,6 +73,30 @@ func (c *Controllers) GetAtw(m *discordgo.MessageCreate) {
 	}
 }
 
+
+var ValidSizes = map[string]string{
+	"4": "4",
+	"4.5": "4.5",
+	"5": "5",
+	"5.5": "5.5",
+	"6": "6",
+	"6.5": "6.5",
+	"7": "7",
+	"7.5": "7.5",
+	"8": "8",
+	"8.5": "8.5",
+	"9": "9",
+	"9.5": "9.5",
+	"10": "10",
+	"10.5": "10.5",
+	"11": "11",
+	"11.5": "11.5",
+	"12": "12",
+	"12.5": "12.5",
+	"13": "13",
+	"13.5": "13.5",
+}
+
 func (c *Controllers) GetATWFromScraper(m *discordgo.MessageCreate)  {
 	info := strings.Split(m.Content, " ")
 	if len(info) < 1 {
@@ -96,11 +120,13 @@ func (c *Controllers) GetATWFromScraper(m *discordgo.MessageCreate)  {
 
 	var partNumbers []*PartNumber
 	for _, v := range products {
-		partNumbers = append(partNumbers,
-			&PartNumber{
-			PartNumber: v.PartNumber,
-			SizeName:   v.Size},
+		if ValidSizes[v.Size] != "" {
+			partNumbers = append(partNumbers,
+				&PartNumber{
+					PartNumber: v.PartNumber,
+					SizeName:   v.Size},
 			)
+		}
 	}
 	resp := ItemATW{Item: partNumbers}
 	br, err := json.Marshal(resp)

@@ -14,7 +14,7 @@ func (c *Controllers) GetTasksByAccounts(m *discordgo.MessageCreate)  {
 	//productID := info[1]
 	//launchID  := info[2]
 	//split     := info[3]
-	//sizes     := info[4]
+	//ValidSizes     := info[4]
 	//
 	//splitNumber, err := strconv.Atoi(split)
 	//if err != nil {

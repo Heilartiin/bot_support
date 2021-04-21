@@ -61,8 +61,8 @@ func (api *API) MessageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		api.Controllers.GetNikeAccounts(m)
 	case "nike-bots":
 		api.Controllers.GetTasksByAccounts(m)
-		default:
-			return
+	default:
+		return
 		}
 }
 

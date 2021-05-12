@@ -10,6 +10,7 @@ type Task struct {
 	WishListID	string		`json:"wish_list_id" db:"wish_list_id"`
 	AccessKey 	string		`json:"access_key" db:"access_key"`
 	Active		bool 		`json:"active" db:"active"`
+	Alarm		bool		`json:"alarm" db:"alarm"`
 	TimeSleep   int			`json:"time_sleep" db:"time_sleep"`
 	CreatedAt 	time.Time 	`json:"-" db:"created_at"`
 	UpdatedAt 	time.Time 	`json:"-" db:"updated_at"`

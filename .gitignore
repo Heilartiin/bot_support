@@ -9,3 +9,6 @@
 *.key
 /vendor
 .gitconfig
+/logs
+.logs
+logs

@@ -8,6 +8,7 @@ import (
 	"github.com/Heilartin/bot_support/models"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -97,53 +98,62 @@ func (c *Client) GetInformationByContract(contractAddress string) (res *models.O
 		c.log.Error(err)
 		return
 	}
-	if contractInfo.Collection == nil {
-		c.log.Error("collection is nil")
-		return nil, errors.New("collection is nil")
-	}
 	collectionInfo := contractInfo.Collection
 
-	stats, err := c.RetrievingCollectionStats(contractInfo.Collection.Slug)
-	if err != nil {
-		c.log.Error(err)
-		return
-	}
-	if stats.Stats == nil {
-		c.log.Error("stats is nil")
-		return nil, errors.New("stats is nil")
-	}
 	res = &models.OpenSeaCollection{
 		Address:             contractAddress,
+		Name:    		     contractInfo.Name,
+		Slug:   			 strings.Replace(strings.ToLower(contractInfo.Name), " ", "", 10),
+
 		EtherscanUrl:        "https://etherscan.io/address/" + contractAddress,
-		Name:                collectionInfo.Name,
-		Slug:                collectionInfo.Slug,
-		OSUrl:               "https://opensea.io/collection/" + collectionInfo.Slug,
 		ImageUrl:            contractInfo.ImageUrl,
 		ServiceFee:          contractInfo.OpenseaSellerFeeBasisPoints / 100,
 		CreatorFee:          contractInfo.DevSellerFeeBasisPoints / 100,
-		FloorPrice:          stats.Stats.FloorPrice,
-		TotalVolume:         stats.Stats.TotalVolume,
-		TotalSales:          stats.Stats.TotalSales,
 		TxsEtherscan:  		 "https://etherscan.io/txs?a=" + contractAddress,
 		PendingTxsEtherscan: fmt.Sprintf("https://etherscan.io/txsPending?a=%s&m=hf", contractAddress),
-		NumOwners:           stats.Stats.NumOwners,
 		ContractCreated:     c.parseTime(contractInfo.CreatedDate),
-		OSCollectionCreated: c.parseTime(collectionInfo.CreatedDate),
+		OSCollectionCreated: time.Time{},
 	}
-	if collectionInfo.TelegramUrl != nil {
-		res.TelegramUrl = *collectionInfo.TelegramUrl
+	res.OSUrl = "https://opensea.io/collection/" + res.Slug
+	if res.ImageUrl == "" {
+		res.ImageUrl = "https://sun9-69.userapi.com/impg/dMSu7oaG5M63yaGc_8d2dVvACI-iWa4309qZyg/4HvGJnnbKYc.jpg?size=750x750&quality=96&sign=4711322ea31ba83e81170caa348424c6&type=album"
 	}
-	if collectionInfo.TwitterUsername != nil {
-		res.TwitterUrl = "https://twitter.com/" + *collectionInfo.TwitterUsername
-	}
-	if collectionInfo.InstagramUsername != nil {
-		res.InstagramUrl ="https://www.instagram.com/" + *collectionInfo.InstagramUsername
-	}
-	if collectionInfo.DiscordUrl != nil {
-		res.DiscordUrl = *collectionInfo.DiscordUrl
-	}
-	if collectionInfo.ExternalUrl != nil {
-		res.ExternalLink = *collectionInfo.ExternalUrl
+
+	if collectionInfo != nil {
+		res.Name = collectionInfo.Name
+		res.Slug =  collectionInfo.Slug
+		res.OSUrl = "https://opensea.io/collection/" + collectionInfo.Slug
+		res.OSCollectionCreated = c.parseTime(collectionInfo.CreatedDate)
+
+		if collectionInfo.TelegramUrl != nil {
+			res.TelegramUrl = *collectionInfo.TelegramUrl
+		}
+		if collectionInfo.TwitterUsername != nil {
+			res.TwitterUrl = "https://twitter.com/" + *collectionInfo.TwitterUsername
+		}
+		if collectionInfo.InstagramUsername != nil {
+			res.InstagramUrl ="https://www.instagram.com/" + *collectionInfo.InstagramUsername
+		}
+		if collectionInfo.DiscordUrl != nil {
+			res.DiscordUrl = *collectionInfo.DiscordUrl
+		}
+		if collectionInfo.ExternalUrl != nil {
+			res.ExternalLink = *collectionInfo.ExternalUrl
+		}
+		stats, err := c.RetrievingCollectionStats(collectionInfo.Slug)
+		if err != nil {
+			c.log.Error(err)
+			return nil, err
+		}
+		if stats.Stats == nil {
+			c.log.Error("stats is nil")
+			return nil, errors.New("stats is nil")
+		}
+		res.FloorPrice  =   stats.Stats.FloorPrice
+		res.TotalVolume =   stats.Stats.TotalVolume
+		res.TotalSales  =   stats.Stats.TotalSales
+		res.NumOwners   =   stats.Stats.NumOwners
+		return res, nil
 	}
 	return
 }

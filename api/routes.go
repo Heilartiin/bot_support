@@ -25,44 +25,46 @@ func (api *API) MessageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 	}
 
 	switch command[0] {
-	case "help":
-		api.Controllers.Help(m)
-	case "atw":
-		api.Controllers.GetAtw(m)
-	case "mrp":
-		api.Controllers.GetImages(m)
-	case "atw-scraper":
-		api.Controllers.GetATWFromScraper(m)
-	case "qt":
-		api.Controllers.GetQTSToPrivateChannel(m)
-	case "qt-channel":
-		api.Controllers.GetQTs(m)
-	case "vd-balance":
-		api.Controllers.VDSinGetBalance(m)
-	case "vd-servers":
-		api.Controllers.VDSinGetAllServers(m)
-	case "vd-delete":
-		api.Controllers.VDSinDeleteAllServers(m)
-	case "1c-balance":
-		api.Controllers.OneCloudGetBalance(m)
-	case "1c-servers":
-		api.Controllers.OneCloudGetAllServers(m)
-	case "pm-proxies":
-		api.Controllers.GetProxyMarketProxiesJSONFile(m)
-	case "pm-proxies-string":
-		api.Controllers.GetProxyMarketStringJSONFile(m)
-	case "nike-storage":
-		api.Controllers.StorageNikeEntries(m)
-	case "nike-tops":
-		api.Controllers.GetEntriesByTOP(m)
-	case "nike-storage-accounts":
-		api.Controllers.StorageNikeAccounts(m)
-	case "nike-accs":
-		api.Controllers.GetNikeAccounts(m)
-	case "nike-bots":
-		api.Controllers.GetTasksByAccounts(m)
-	case "nap-invisible":
-		api.Controllers.GetNapProductsInvisible(m)
+	case "os":
+		api.Controllers.OSGetCollectionInfo(m)
+	//case "help":
+	//	api.Controllers.Help(m)
+	//case "atw":
+	//	api.Controllers.GetAtw(m)
+	//case "mrp":
+	//	api.Controllers.GetImages(m)
+	//case "atw-scraper":
+	//	api.Controllers.GetATWFromScraper(m)
+	//case "qt":
+	//	api.Controllers.GetQTSToPrivateChannel(m)
+	//case "qt-channel":
+	//	api.Controllers.GetQTs(m)
+	//case "vd-balance":
+	//	api.Controllers.VDSinGetBalance(m)
+	//case "vd-servers":
+	//	api.Controllers.VDSinGetAllServers(m)
+	//case "vd-delete":
+	//	api.Controllers.VDSinDeleteAllServers(m)
+	//case "1c-balance":
+	//	api.Controllers.OneCloudGetBalance(m)
+	//case "1c-servers":
+	//	api.Controllers.OneCloudGetAllServers(m)
+	//case "pm-proxies":
+	//	api.Controllers.GetProxyMarketProxiesJSONFile(m)
+	//case "pm-proxies-string":
+	//	api.Controllers.GetProxyMarketStringJSONFile(m)
+	//case "nike-storage":
+	//	api.Controllers.StorageNikeEntries(m)
+	//case "nike-tops":
+	//	api.Controllers.GetEntriesByTOP(m)
+	//case "nike-storage-accounts":
+	//	api.Controllers.StorageNikeAccounts(m)
+	//case "nike-accs":
+	//	api.Controllers.GetNikeAccounts(m)
+	//case "nike-bots":
+	//	api.Controllers.GetTasksByAccounts(m)
+	//case "nap-invisible":
+	//	api.Controllers.GetNapProductsInvisible(m)
 	default:
 		return
 		}

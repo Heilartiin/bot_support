@@ -5,6 +5,7 @@ import (
 	"github.com/Heilartin/bot_support/clients/discord"
 	gsp "github.com/Heilartin/bot_support/clients/gs-nike-products"
 	"github.com/Heilartin/bot_support/clients/mrporter"
+	"github.com/Heilartin/bot_support/clients/opensea"
 	"github.com/Heilartin/bot_support/clients/proxies"
 	"github.com/Heilartin/bot_support/clients/vdsin"
 	"github.com/Heilartin/bot_support/config"
@@ -27,6 +28,7 @@ type Controllers struct {
 	MrPorter 	  *mrporter.MrpClient
 	VDSin 		  *vdsin.VDSinClient
 	OneCloud 	  *_cloud.OneCClient
+	OpenSea 	  *opensea.Client
 	GsProductNike *gsp.Client
 	ProxiesMarket *proxy_market.ProxyMarketClient
 }
@@ -42,6 +44,7 @@ func NewControllers(rep *storage.Storage, log *logger.LocalLogger,
 		Session: 	   s,
 		VDSin:         vdsin.NewVDSinClient(log, cfg.VDSin),
 		FileClient:    proxies.NewFileClient(log, rep),
+		OpenSea:       opensea.NewClient(log, cfg.OpenSea),
 		MrPorter:  	   mrporter.NewMrpClient(log, cfg.MRPConfig, rep),
 		Dis:  		   discord.NewDiscordClient(log, cfg.DiscordConfig),
 		OneCloud:      _cloud.NewOneCClient(log, cfg.OneCloud),

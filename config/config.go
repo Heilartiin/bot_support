@@ -20,6 +20,8 @@ type Config struct {
 	Discord			*Discord
 	MRPConfig		*MrpPorter
 	DiscordConfig   *DiscordConfig
+	NFTDiscord 		*NFTDiscord
+	OpenSea 		*OpenSea
 }
 
 
@@ -30,6 +32,12 @@ type Discord struct {
 	ClientSecret 	string
 	Prefix			string
 	FooterIcon 		string
+}
+
+type OpenSea struct {
+	ApiKey 			string
+	ApiUrl 			string
+	UserAgent 		string
 }
 
 type MrpPorter struct {
@@ -57,6 +65,11 @@ type VDSin struct {
 
 type OneCloud struct {
 	ApiUrl 	string
+}
+
+type NFTDiscord struct {
+	ApiUrl 		string
+	UserAgent 	string
 }
 
 func NewConfig() *Config {
@@ -96,6 +109,15 @@ func NewConfig() *Config {
 		VDSin: &VDSin{ApiUrl: os.Getenv("VDSIN_API_URL")},
 		OneCloud: &OneCloud{ApiUrl: os.Getenv("ONE_CLOUD_API_URL")},
 		ProxyMarket: &ProxyMarket{ApiKey: os.Getenv("PROXY_MARKET_API_KEY")},
+		NFTDiscord: &NFTDiscord{
+			ApiUrl:    "https://discord.com",
+			UserAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36",
+		},
+		OpenSea: &OpenSea{
+			ApiKey: "38fd11fa977640a9be1c01cdc6f43785",
+			ApiUrl: "https://api.opensea.io",
+			UserAgent: "MetaMask/795 CFNetwork/1312 Darwin/21.0.0",
+		},
 	}
 	return &cfg
 }

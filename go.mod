@@ -12,9 +12,10 @@ require (
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/jmoiron/sqlx v1.3.1
 	github.com/joho/godotenv v1.3.0
+	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/lib/pq v1.9.0
+	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.7.0
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
-	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
 )

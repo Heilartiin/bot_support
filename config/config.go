@@ -14,14 +14,15 @@ type Config struct {
 	DBHost          string
 	DBPort          string
 	ProductionStart string
-	ProxyMarket 	*ProxyMarket
-	VDSin			*VDSin
-	OneCloud		*OneCloud
-	Discord			*Discord
-	MRPConfig		*MrpPorter
+	ProxyMarket     *ProxyMarket
+	VDSin           *VDSin
+	OneCloud        *OneCloud
+	Discord         *Discord
+	MRPConfig       *MrpPorter
 	DiscordConfig   *DiscordConfig
-	NFTDiscord 		*NFTDiscord
-	OpenSea 		*OpenSea
+	NFTDiscord      *NFTDiscord
+	OpenSea         *OpenSea
+	Infura          *Infura
 }
 
 
@@ -72,6 +73,13 @@ type NFTDiscord struct {
 	UserAgent 	string
 }
 
+type Infura struct {
+	ProjectID     string
+	ProjectSecret string
+	Http          string
+	Wss           string
+}
+
 func NewConfig() *Config {
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -117,6 +125,12 @@ func NewConfig() *Config {
 			ApiKey: "38fd11fa977640a9be1c01cdc6f43785",
 			ApiUrl: "https://api.opensea.io",
 			UserAgent: "MetaMask/795 CFNetwork/1312 Darwin/21.0.0",
+		},
+		Infura: &Infura{
+			ProjectID:     "40a8613c773944a9b0f0fa09560038ae",
+			ProjectSecret: "2e026e62d9e540d58aafd0f7bafbdb54",
+			Http:          "https://mainnet.infura.io/v3/40a8613c773944a9b0f0fa09560038ae",
+			Wss:           "wss://mainnet.infura.io/ws/v3/40a8613c773944a9b0f0fa09560038ae",
 		},
 	}
 	return &cfg

@@ -105,12 +105,12 @@ func (c *Client) GetInformationByContract(contractAddress string) (res *models.O
 		Name:    		     contractInfo.Name,
 		Slug:   			 strings.Replace(strings.ToLower(contractInfo.Name), " ", "", 10),
 
-		EtherscanUrl:        "https://etherscan.io/address/" + contractAddress,
+		EtherscanUrl:        "https://ethereum.io/address/" + contractAddress,
 		ImageUrl:            contractInfo.ImageUrl,
 		ServiceFee:          contractInfo.OpenseaSellerFeeBasisPoints / 100,
 		CreatorFee:          contractInfo.DevSellerFeeBasisPoints / 100,
-		TxsEtherscan:  		 "https://etherscan.io/txs?a=" + contractAddress,
-		PendingTxsEtherscan: fmt.Sprintf("https://etherscan.io/txsPending?a=%s&m=hf", contractAddress),
+		TxsEtherscan:  		 "https://ethereum.io/txs?a=" + contractAddress,
+		PendingTxsEtherscan: fmt.Sprintf("https://ethereum.io/txsPending?a=%s&m=hf", contractAddress),
 		ContractCreated:     c.parseTime(contractInfo.CreatedDate),
 		OSCollectionCreated: time.Time{},
 	}

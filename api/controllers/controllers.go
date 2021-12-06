@@ -3,6 +3,7 @@ package controllers
 import (
 	_cloud "github.com/Heilartin/bot_support/clients/1cloud"
 	"github.com/Heilartin/bot_support/clients/discord"
+	"github.com/Heilartin/bot_support/clients/ethereum"
 	gsp "github.com/Heilartin/bot_support/clients/gs-nike-products"
 	"github.com/Heilartin/bot_support/clients/mrporter"
 	"github.com/Heilartin/bot_support/clients/opensea"
@@ -30,6 +31,7 @@ type Controllers struct {
 	OneCloud 	  *_cloud.OneCClient
 	OpenSea 	  *opensea.Client
 	GsProductNike *gsp.Client
+	EthClient 	  *ethereum.Client
 	ProxiesMarket *proxy_market.ProxyMarketClient
 }
 
@@ -48,6 +50,7 @@ func NewControllers(rep *storage.Storage, log *logger.LocalLogger,
 		MrPorter:  	   mrporter.NewMrpClient(log, cfg.MRPConfig, rep),
 		Dis:  		   discord.NewDiscordClient(log, cfg.DiscordConfig),
 		OneCloud:      _cloud.NewOneCClient(log, cfg.OneCloud),
+		EthClient:     ethereum.NewClient(log, cfg.Infura),
 		ProxiesMarket: proxy_market.NewProxyMarketClient(cfg.ProxyMarket.ApiKey),
 	}
 	return a

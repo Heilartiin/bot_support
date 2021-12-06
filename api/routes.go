@@ -8,14 +8,13 @@ import (
 //667588661470035989
 func (api *API) MessageHandler(s *discordgo.Session, m *discordgo.MessageCreate)  {
 
-	// Ignore all message prefix != "!"
-	if !strings.HasPrefix(m.Content, api.Config.Discord.Prefix) {
+	switch {
+	case !strings.HasPrefix(m.Content, api.Config.Discord.Prefix):
+		return
+	case m.Author.ID == s.State.User.ID:
 		return
 	}
-	// Ignore all messages created by the bot itself
-	if m.Author.ID == s.State.User.ID {
-		return
-	}
+
 	// Split command without prefix
 	content := strings.Replace(m.Content, api.Config.Discord.Prefix, "", 1)
 	command := strings.Fields(content)
@@ -27,6 +26,8 @@ func (api *API) MessageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 	switch command[0] {
 	case "os":
 		api.Controllers.OSGetCollectionInfo(m)
+	case "tx":
+		api.Controllers.OSGetCollectionInfoByHash(m)
 	//case "help":
 	//	api.Controllers.Help(m)
 	//case "atw":
@@ -70,4 +71,42 @@ func (api *API) MessageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		}
 }
 
+var TriggerWords = []string{"minted", "Popular NFT mint"}
 
+func (api *API) parseMessage(s *discordgo.Session, m *discordgo.Message) bool {
+	// Ignore all message prefix != "!"
+
+	trigger := haveTrigger(m.Content)
+	switch {
+	case !trigger:
+		return false
+	case !strings.HasPrefix(m.Content, api.Config.Discord.Prefix):
+		return false
+	case m.Author.ID == s.State.User.ID:
+		return false
+	}
+
+	if trigger {
+		switch {
+		case strings.Contains(m.Content, "Popular NFT mint"):
+
+		}
+	}
+	// Split command without prefix
+	content := strings.Replace(m.Content, api.Config.Discord.Prefix, "", 1)
+	command := strings.Fields(content)
+
+	if len(command) == 0 {
+		return false
+	}
+	return true
+}
+
+func haveTrigger(content string) bool {
+	for _, v := range TriggerWords {
+		if strings.Contains(content, v) {
+			return true
+		}
+	}
+	return false
+}

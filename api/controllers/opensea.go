@@ -30,6 +30,35 @@ func (c *Controllers) OSGetCollectionInfo(m *discordgo.MessageCreate) {
 	return
 }
 
+func (c *Controllers) OSGetCollectionInfoByHash(m *discordgo.MessageCreate) {
+	info := strings.Split(m.Content, " ")
+	if len(info) < 2 {
+		c.Logger.Error("Missing parameter")
+		c.BadAction("Missing parameter", m)
+		return
+	}
+	tx := info[1]
+	response, _, err := c.EthClient.TransactionByHash(tx)
+	if err != nil {
+		c.Logger.Error(err)
+		c.BadAction(err.Error(), m)
+		return
+	}
+	res, err := c.OpenSea.GetInformationByContract(response.To().String())
+	if err != nil {
+		c.Logger.Error(err)
+		c.BadAction(err.Error(), m)
+		return
+	}
+	_, err = c.Session.ChannelMessageSendEmbed(m.ChannelID, c.createEmbedCollection(res))
+	if err != nil {
+		c.Logger.Error(err)
+		c.BadAction(err.Error(), m)
+		return
+	}
+	return
+}
+
 func (c *Controllers) createEmbedCollection(cc *models.OpenSeaCollection) *discordgo.MessageEmbed {
 
 	contract := discordgo.MessageEmbedField{

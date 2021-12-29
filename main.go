@@ -17,23 +17,3 @@ func main() {
 	}
 	ap.Run()
 }
-
-//func main() {
-//	cfg := config.NewConfig()
-//	log := logger.NewLogger(cfg.ProductionStart)
-//	ethClient := ethereum.NewClient(log, cfg.Infura)
-//
-//	response, pending, err := ethClient.TransactionByHash("0x49aa153baf1c773a1ab69f341dfefbb92b7ec2b326cdc95e897c148f407736fa")
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//	_ = pending
-//
-//	os := opensea.NewClient(log, cfg.OpenSea)
-//
-//	result, err := os.GetInformationByContract(response.To().String())
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//	pp.Println(result)
-//}

@@ -105,12 +105,12 @@ func (c *Client) GetInformationByContract(contractAddress string) (res *models.O
 		Name:    		     contractInfo.Name,
 		Slug:   			 strings.Replace(strings.ToLower(contractInfo.Name), " ", "", 10),
 
-		EtherscanUrl:        "https://ethereum.io/address/" + contractAddress,
+		EtherscanUrl:        "https://etherscan.io/address/" + contractAddress,
 		ImageUrl:            contractInfo.ImageUrl,
 		ServiceFee:          contractInfo.OpenseaSellerFeeBasisPoints / 100,
 		CreatorFee:          contractInfo.DevSellerFeeBasisPoints / 100,
-		TxsEtherscan:  		 "https://ethereum.io/txs?a=" + contractAddress,
-		PendingTxsEtherscan: fmt.Sprintf("https://ethereum.io/txsPending?a=%s&m=hf", contractAddress),
+		TxsEtherscan:  		 "https://etherscan.io/txs?a=" + contractAddress,
+		PendingTxsEtherscan: fmt.Sprintf("https://etherscan.io/txsPending?a=%s&m=hf", contractAddress),
 		ContractCreated:     c.parseTime(contractInfo.CreatedDate),
 		OSCollectionCreated: time.Time{},
 	}
@@ -153,6 +153,9 @@ func (c *Client) GetInformationByContract(contractAddress string) (res *models.O
 		res.TotalVolume =   stats.Stats.TotalVolume
 		res.TotalSales  =   stats.Stats.TotalSales
 		res.NumOwners   =   stats.Stats.NumOwners
+		res.OneDayVolume = stats.Stats.OneDayVolume
+		res.OneDaySales = stats.Stats.OneDaySales
+		res.FloorSell = stats.Stats.FloorPrice * (1 - (res.ServiceFee + res.CreatorFee) / 100)
 		return res, nil
 	}
 	return

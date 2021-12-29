@@ -92,6 +92,24 @@ func (c *Controllers) createEmbedCollection(cc *models.OpenSeaCollection) *disco
 		Inline: true,
 	}
 
+	floorSell := discordgo.MessageEmbedField{
+		Name: "Max Avg",
+		Value: fmt.Sprintf("ETH %.3f", cc.FloorSell),
+		Inline: true,
+	}
+
+	oneDayVolume := discordgo.MessageEmbedField{
+		Name: "1D Volume",
+		Value: fmt.Sprintf("ETH %.3f", cc.OneDayVolume),
+		Inline: true,
+	}
+
+	oneDaySales := discordgo.MessageEmbedField{
+		Name: "1D Sales",
+		Value: fmt.Sprintf("%.0f", cc.OneDaySales),
+		Inline: true,
+	}
+
 	fees := discordgo.MessageEmbedField{
 		Name: "Fees",
 		Value: fmt.Sprintf("Service Fee %.1f %% +\nCreator Royalty %.1f %% =\nTotal Fee %.1f %%",
@@ -105,8 +123,10 @@ func (c *Controllers) createEmbedCollection(cc *models.OpenSeaCollection) *disco
 		Inline: false,
 	}
 
-
-	fields := []*discordgo.MessageEmbedField{&contract, &txs, &floor, &volume, &owners, &fees, &links}
+	fields := []*discordgo.MessageEmbedField{&contract,
+		&txs, &floor, &volume, &owners,
+		&floorSell, &oneDayVolume, &oneDaySales,
+		&fees, &links}
 
 	fields = append(fields)
 

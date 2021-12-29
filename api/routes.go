@@ -9,6 +9,14 @@ import (
 func (api *API) MessageHandler(s *discordgo.Session, m *discordgo.MessageCreate)  {
 
 	switch {
+	// fix
+	case m.ChannelID == "917449671323029505" && m.Author.ID != "917500852577648700" && s.State.User.ID != m.Author.ID:
+		s.ChannelMessageSend(m.ChannelID, "discord.gg/" + m.Content)
+		return
+	// glory boyz
+	case m.ChannelID == "917738838233870397" && m.Author.ID != "580517285085839381" && s.State.User.ID != m.Author.ID:
+		s.ChannelMessageSend(m.ChannelID, "discord.gg/" + m.Content)
+		return
 	case !strings.HasPrefix(m.Content, api.Config.Discord.Prefix):
 		return
 	case m.Author.ID == s.State.User.ID:

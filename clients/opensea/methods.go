@@ -124,7 +124,7 @@ func (c *Client) GetInformationByContract(contractAddress string) (res *models.O
 		res.Slug =  collectionInfo.Slug
 		res.OSUrl = "https://opensea.io/collection/" + collectionInfo.Slug
 		res.OSCollectionCreated = c.parseTime(collectionInfo.CreatedDate)
-
+		res.NFTNerdUrl = "https://nftnerds.ai/collection/" + res.Slug
 		if collectionInfo.TelegramUrl != nil {
 			res.TelegramUrl = *collectionInfo.TelegramUrl
 		}

@@ -21,6 +21,7 @@ type OpenSeaCollection struct {
 	TotalSales          float64   `json:"total_sales"`
 	NumOwners           int       `json:"num_owners"`
 	ExternalLink        string    `json:"external_link"`
+	NFTNerdUrl 			string	  `json:"nft_nerd_url"`
 	DiscordUrl          string    `json:"discord_url"`
 	TelegramUrl         string    `json:"telegram_url"`
 	TwitterUrl          string    `json:"twitter_url"`

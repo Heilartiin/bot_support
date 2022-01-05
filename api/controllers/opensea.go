@@ -69,7 +69,7 @@ func (c *Controllers) createEmbedCollection(cc *models.OpenSeaCollection) *disco
 
 	txs := discordgo.MessageEmbedField{
 		Name: 	"Txs",
-		Value:	 fmt.Sprintf("[All Txs](%s)\n[Pending Txs](%s)",
+		Value:	 fmt.Sprintf("[All Txs](%s) · [Pending Txs](%s)",
 			cc.TxsEtherscan, cc.PendingTxsEtherscan),
 		Inline:  false,
 	}
@@ -112,7 +112,7 @@ func (c *Controllers) createEmbedCollection(cc *models.OpenSeaCollection) *disco
 
 	fees := discordgo.MessageEmbedField{
 		Name: "Fees",
-		Value: fmt.Sprintf("Service Fee %.1f %% +\nCreator Royalty %.1f %% =\nTotal Fee %.1f %%",
+		Value: fmt.Sprintf("Service Fee %.1f %% + Creator Royalty %.1f %% = Total Fee %.1f %%",
 			cc.ServiceFee, cc.CreatorFee, cc.ServiceFee + cc.CreatorFee),
 		Inline: false,
 	}
@@ -123,10 +123,16 @@ func (c *Controllers) createEmbedCollection(cc *models.OpenSeaCollection) *disco
 		Inline: false,
 	}
 
+	nftNerd := discordgo.MessageEmbedField{
+		Name:   "Nft Nerds",
+		Value: 	fmt.Sprintf("[%s](%s)", cc.Slug, cc.NFTNerdUrl),
+		Inline: false,
+	}
+
 	fields := []*discordgo.MessageEmbedField{&contract,
 		&txs, &floor, &volume, &owners,
 		&floorSell, &oneDayVolume, &oneDaySales,
-		&fees, &links}
+		&fees, &links, &nftNerd}
 
 	fields = append(fields)
 
@@ -150,19 +156,19 @@ func (c *Controllers) createEmbedCollection(cc *models.OpenSeaCollection) *disco
 func createLinks(res *models.OpenSeaCollection) string  {
 	var links string
 	if res.ExternalLink != "" {
-		links += fmt.Sprintf("[Website](%s)\n", res.ExternalLink)
+		links += fmt.Sprintf("[Website](%s) · ", res.ExternalLink)
 	}
 	if res.DiscordUrl != "" {
-		links += fmt.Sprintf("[Discord](%s)\n", res.DiscordUrl)
+		links += fmt.Sprintf("[Discord](%s) · ", res.DiscordUrl)
 	}
 	if res.TwitterUrl != "" {
-		links += fmt.Sprintf("[Twitter](%s)\n", res.TwitterUrl)
+		links += fmt.Sprintf("[Twitter](%s) · ", res.TwitterUrl)
 	}
 	if res.InstagramUrl != "" {
-		links += fmt.Sprintf("[Instagram](%s)\n", res.InstagramUrl)
+		links += fmt.Sprintf("[Instagram](%s) · ", res.InstagramUrl)
 	}
-	if res.TelegramUrl != "" {
-		links += fmt.Sprintf("[Telegram](%s)\n", res.TelegramUrl)
+	if res.TelegramUrl == "" {
+		links += fmt.Sprintf("[Telegram](%s)", res.InstagramUrl)
 	}
 	if links == "" {
 		links += "Not found links"

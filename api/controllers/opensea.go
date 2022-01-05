@@ -168,7 +168,7 @@ func createLinks(res *models.OpenSeaCollection) string  {
 		links += fmt.Sprintf("[Instagram](%s) · ", res.InstagramUrl)
 	}
 	if res.TelegramUrl == "" {
-		links += fmt.Sprintf("[Telegram](%s)", res.InstagramUrl)
+		links += fmt.Sprintf("[Telegram](%s)", res.TelegramUrl)
 	}
 	if links == "" {
 		links += "Not found links"

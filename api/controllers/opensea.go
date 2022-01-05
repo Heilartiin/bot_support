@@ -65,7 +65,6 @@ func (c *Controllers) OSGetCollectionInfoByHash(m *discordgo.MessageCreate) {
 	}
 	return
 }
-
 func parser(query string) (res string, err error)  {
 	urlParse, err := url.Parse(query)
 	if err != nil {
@@ -77,11 +76,10 @@ func parser(query string) (res string, err error)  {
 	}
 	if strings.Contains(query, "/assets/") {
 		stringSlice := strings.Split(urlParse.Path, "/")
-		if len(stringSlice) > 2 {
-			res = stringSlice[2]
-			res = strings.Replace(res, "?source=moby.gg", "", 1)
+		if len(stringSlice) < 2 {
+			return "", errors.New("could not recognize")
 		}
-		return "", errors.New("could not recognize")
+		res = stringSlice[2]
 	}
 	if strings.Contains(query, "/tx/") {
 		res = strings.Replace(urlParse.Path, "/tx/", "", 1)

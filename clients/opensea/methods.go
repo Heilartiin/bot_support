@@ -8,6 +8,7 @@ import (
 	"github.com/Heilartin/bot_support/models"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -61,6 +62,34 @@ func (c *Client) RetrievingSingleCollection(collectionName string) (res *Contrac
 		c.log.Error(err)
 		return
 	}
+	if len(res.Collection.PrimaryAssetContracts) == 0 {
+		return nil, errors.New("contact is empty")
+	}
+	res = &ContractResponse{
+		Collection:   				 res.Collection,
+		Address:                     res.Collection.PrimaryAssetContracts[0].Address,
+		AssetContractType:           res.Collection.PrimaryAssetContracts[0].AssetContractType,
+		CreatedDate:                 res.Collection.PrimaryAssetContracts[0].CreatedDate,
+		Name:                        res.Collection.PrimaryAssetContracts[0].Name,
+		NftVersion:                  res.Collection.PrimaryAssetContracts[0].NftVersion,
+		OpenseaVersion:              res.Collection.PrimaryAssetContracts[0].OpenseaVersion,
+		Owner:                       res.Collection.PrimaryAssetContracts[0].Owner,
+		SchemaName:                  res.Collection.PrimaryAssetContracts[0].SchemaName,
+		Symbol:                      res.Collection.PrimaryAssetContracts[0].Symbol,
+		TotalSupply:                 res.Collection.PrimaryAssetContracts[0].TotalSupply,
+		Description:                 res.Collection.PrimaryAssetContracts[0].Description,
+		ExternalLink:                res.Collection.PrimaryAssetContracts[0].ExternalLink,
+		ImageUrl:                    res.Collection.PrimaryAssetContracts[0].ImageUrl,
+		DefaultToFiat:               res.Collection.PrimaryAssetContracts[0].DefaultToFiat,
+		DevBuyerFeeBasisPoints:      res.Collection.PrimaryAssetContracts[0].DevBuyerFeeBasisPoints,
+		DevSellerFeeBasisPoints:     res.Collection.PrimaryAssetContracts[0].DevSellerFeeBasisPoints,
+		OnlyProxiedTransfers:        res.Collection.PrimaryAssetContracts[0].OnlyProxiedTransfers,
+		OpenseaBuyerFeeBasisPoints:  res.Collection.PrimaryAssetContracts[0].OpenseaBuyerFeeBasisPoints,
+		OpenseaSellerFeeBasisPoints: res.Collection.PrimaryAssetContracts[0].OpenseaSellerFeeBasisPoints,
+		BuyerFeeBasisPoints:         res.Collection.PrimaryAssetContracts[0].BuyerFeeBasisPoints,
+		SellerFeeBasisPoints:        res.Collection.PrimaryAssetContracts[0].SellerFeeBasisPoints,
+		PayoutAddress:               res.Collection.PrimaryAssetContracts[0].PayoutAddress,
+	}
 	return
 }
 
@@ -92,25 +121,67 @@ func (c *Client) jsonUnmarshal(resp *http.Response, res interface{}) (err error)
 	return
 }
 
-func (c *Client) GetInformationByContract(contractAddress string) (res *models.OpenSeaCollection, err error) {
-	contractInfo, err := c.RetrievingSingleContract(contractAddress)
-	if err != nil {
-		c.log.Error(err)
-		return
+func IsValidAddress(v string) bool {
+	re := regexp.MustCompile("^0x[0-9a-fA-F]{40}$")
+	return re.MatchString(v)
+}
+
+func IsValidTxHash(v string) bool {
+	re := regexp.MustCompile("^0x([A-Fa-f0-9]{64})$")
+	return re.MatchString(v)
+}
+
+func (c *Client) GetInformation(query string) (*models.OpenSeaCollection, error) {
+	var contractInfo *ContractResponse
+	switch IsValidAddress(query) {
+	case true:
+		r, err := c.RetrievingSingleContract(query)
+		if err != nil {
+			c.log.Error(err)
+			return nil, err
+		}
+		contractInfo = r
+	case false:
+		switch IsValidTxHash(query) {
+		case true:
+			tx, _, err := c.EthClient.TransactionByHash(query)
+			if err != nil {
+				c.log.Error(err)
+				return nil, err
+			}
+			r, err := c.RetrievingSingleContract(tx.To().String())
+			if err != nil {
+				c.log.Error(err)
+				return nil, err
+			}
+			contractInfo = r
+		case false:
+			r, err := c.RetrievingSingleCollection(query)
+			if err != nil {
+				c.log.Error(err)
+				return nil, err
+			}
+			contractInfo = r
+		default:
+			return nil, errors.New("could not recognize [case hash]")
+		}
+	default:
+		return nil, errors.New("could not recognize [case address]")
 	}
+
 	collectionInfo := contractInfo.Collection
 
-	res = &models.OpenSeaCollection{
-		Address:             contractAddress,
+	res := &models.OpenSeaCollection{
+		Address:             contractInfo.Address,
 		Name:    		     contractInfo.Name,
 		Slug:   			 strings.Replace(strings.ToLower(contractInfo.Name), " ", "", 10),
 
-		EtherscanUrl:        "https://etherscan.io/address/" + contractAddress,
+		EtherscanUrl:        "https://etherscan.io/address/" + contractInfo.Address,
 		ImageUrl:            contractInfo.ImageUrl,
 		ServiceFee:          contractInfo.OpenseaSellerFeeBasisPoints / 100,
 		CreatorFee:          contractInfo.DevSellerFeeBasisPoints / 100,
-		TxsEtherscan:  		 "https://etherscan.io/txs?a=" + contractAddress,
-		PendingTxsEtherscan: fmt.Sprintf("https://etherscan.io/txsPending?a=%s&m=hf", contractAddress),
+		TxsEtherscan:  		 "https://etherscan.io/txs?a=" + contractInfo.Address,
+		PendingTxsEtherscan: fmt.Sprintf("https://etherscan.io/txsPending?a=%s&m=hf", contractInfo.Address),
 		ContractCreated:     c.parseTime(contractInfo.CreatedDate),
 		OSCollectionCreated: time.Time{},
 	}
@@ -158,7 +229,7 @@ func (c *Client) GetInformationByContract(contractAddress string) (res *models.O
 		res.FloorSell = stats.Stats.FloorPrice * (1 - (res.ServiceFee + res.CreatorFee) / 100)
 		return res, nil
 	}
-	return
+	return res, nil
 }
 
 func (c *Client) parseTime(t string) time.Time  {

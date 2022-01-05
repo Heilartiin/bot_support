@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/Heilartin/bot_support/models"
 	"github.com/bwmarrin/discordgo"
+	"github.com/pkg/errors"
+	"net/url"
 	"strings"
 )
 
@@ -14,8 +16,13 @@ func (c *Controllers) OSGetCollectionInfo(m *discordgo.MessageCreate) {
 		c.BadAction("Missing parameter", m)
 		return
 	}
-	contract := info[1]
-	res, err := c.OpenSea.GetInformationByContract(contract)
+	q, err := parser(info[1])
+	if err != nil {
+		c.Logger.Error(err)
+		c.BadAction(err.Error(), m)
+		return
+	}
+	res, err := c.OpenSea.GetInformation(q)
 	if err != nil {
 		c.Logger.Error(err)
 		c.BadAction(err.Error(), m)
@@ -44,7 +51,7 @@ func (c *Controllers) OSGetCollectionInfoByHash(m *discordgo.MessageCreate) {
 		c.BadAction(err.Error(), m)
 		return
 	}
-	res, err := c.OpenSea.GetInformationByContract(response.To().String())
+	res, err := c.OpenSea.GetInformation(response.To().String())
 	if err != nil {
 		c.Logger.Error(err)
 		c.BadAction(err.Error(), m)
@@ -57,6 +64,32 @@ func (c *Controllers) OSGetCollectionInfoByHash(m *discordgo.MessageCreate) {
 		return
 	}
 	return
+}
+
+func parser(query string) (res string, err error)  {
+	urlParse, err := url.Parse(query)
+	if err != nil {
+		return "", err
+	}
+	res = urlParse.Path
+	if strings.Contains(query, "/collection/") {
+		res = strings.Replace(urlParse.Path, "/collection/", "", 1)
+	}
+	if strings.Contains(query, "/assets/") {
+		stringSlice := strings.Split(urlParse.Path, "/")
+		if len(stringSlice) > 2 {
+			res = stringSlice[2]
+			res = strings.Replace(res, "?source=moby.gg", "", 1)
+		}
+		return "", errors.New("could not recognize")
+	}
+	if strings.Contains(query, "/tx/") {
+		res = strings.Replace(urlParse.Path, "/tx/", "", 1)
+	}
+	if strings.Contains(query, "/address/") {
+		res = strings.Replace(urlParse.Path, "/address/", "", 1)
+	}
+	return strings.Replace(res, "?source=moby.gg", "", 1), nil
 }
 
 func (c *Controllers) createEmbedCollection(cc *models.OpenSeaCollection) *discordgo.MessageEmbed {
@@ -156,19 +189,19 @@ func (c *Controllers) createEmbedCollection(cc *models.OpenSeaCollection) *disco
 func createLinks(res *models.OpenSeaCollection) string  {
 	var links string
 	if res.ExternalLink != "" {
-		links += fmt.Sprintf("[Website](%s) · ", res.ExternalLink)
+		links += fmt.Sprintf("[Website](%s)", res.ExternalLink)
 	}
 	if res.DiscordUrl != "" {
-		links += fmt.Sprintf("[Discord](%s) · ", res.DiscordUrl)
+		links += fmt.Sprintf(" · [Discord](%s)", res.DiscordUrl)
 	}
 	if res.TwitterUrl != "" {
-		links += fmt.Sprintf("[Twitter](%s) · ", res.TwitterUrl)
+		links += fmt.Sprintf(" · [Twitter](%s)", res.TwitterUrl)
 	}
 	if res.InstagramUrl != "" {
-		links += fmt.Sprintf("[Instagram](%s) · ", res.InstagramUrl)
+		links += fmt.Sprintf(" · [Instagram](%s)", res.InstagramUrl)
 	}
-	if res.TelegramUrl == "" {
-		links += fmt.Sprintf("[Telegram](%s)", res.TelegramUrl)
+	if res.TelegramUrl != "" {
+		links += fmt.Sprintf(" · [Telegram](%s)", res.TelegramUrl)
 	}
 	if links == "" {
 		links += "Not found links"

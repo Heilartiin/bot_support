@@ -36,6 +36,8 @@ func (api *API) MessageHandler(s *discordgo.Session, m *discordgo.MessageCreate)
 		api.Controllers.OSGetCollectionInfo(m)
 	case "tx":
 		api.Controllers.OSGetCollectionInfoByHash(m)
+	case "troll":
+		api.Controllers.Troll(m)
 	//case "help":
 	//	api.Controllers.Help(m)
 	//case "atw":
